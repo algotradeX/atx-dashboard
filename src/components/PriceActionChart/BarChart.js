@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import '../../App.css';
 import { scaleLinear } from "d3-scale";
 import { max } from 'd3-array';
 import { select } from 'd3-selection';
 import * as d3 from 'd3';
-import ReactFauxDOM from 'react-faux-dom';
 
 
 class BarChart extends Component {
@@ -26,17 +24,6 @@ class BarChart extends Component {
     }
 
     createBarChart() {
-
-        let margin = { top: 40, right: 10, bottom: 20, left: 10 },
-            width = this.props.size[1] - margin.left - margin.right,
-            height = this.props.size[0] - margin.top - margin.bottom;
-
-        // svg.attr("width", width + margin.left + margin.right)
-        //     .attr("height", height + margin.top + margin.bottom)
-        //     .append("g")
-        //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-        //     .attr("ref", node => this.node = node);
-
         const dataMax = max(this.state.data);
 
         const yScale = scaleLinear()
@@ -78,7 +65,7 @@ class BarChart extends Component {
         return (
             <React.Fragment>
                 <button onClick={() => this.change()}>Change</button>
-                <svg ref={node => this.node = node} width={500} height={500}></svg>
+                <svg ref={node => this.node = node} width={500} height={500}/>
             </React.Fragment>
         );
     }
