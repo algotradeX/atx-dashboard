@@ -5,7 +5,7 @@ function randomIntFromInterval(min,max){
 }
 
 export function generatePriceGraphDataForThisDay(date, symbol, interval) {
-    return {
+    const newData = {
         "high": randomIntFromInterval(25, 32),
         "open": randomIntFromInterval(15, 25),
         "close": randomIntFromInterval(15, 25),
@@ -15,6 +15,8 @@ export function generatePriceGraphDataForThisDay(date, symbol, interval) {
         "symbol": symbol,
         "interval": interval,
     };
+    console.log("generatePriceGraphDataForThisDay : ", newData);
+    return newData;
 }
 
 export function getInitialData(startDate="01-Mar-2020", days=10, symbol="HDFC", interval=1440) {

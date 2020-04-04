@@ -31,34 +31,56 @@ class PriceChart extends React.Component {
     drawPriceGraph() {
         const node = this.node;
         const data = this.state.data;
+        const candleOCWidth = 10;
+        const candleOCGap = 6;
+        const candleHLWidth = 2;
         const yScale = scaleLinear()
             .domain([0, 40])
             .range([0, 500]);
 
-        const updateEachData = function(d) {
+        const updateOCBlockColorAndDimensions = function(d) {
             d3.select(this)
                 .transition()
                 .duration(500)
                 .attr('y', d => yScale(Math.abs(data[d].close)))
                 .attr('height', d => {
                     return Math.abs(data[d].open - data[d].close) ?
-                    yScale(Math.abs(data[d].open - data[d].close)) : 1
+                        yScale(Math.abs(data[d].open - data[d].close)) : 1;
                 })
                 .style('fill', (data[d].open - data[d].close) <= 0 ? "#006667" : "#ff1138");
         };
 
-        select(node)
-            .selectAll('rect')
+        const updateHLBlockColorAndDimensions = function(d) {
+            d3.select(this)
+                .transition()
+                .duration(500)
+                .attr('y', d => 500 - yScale(Math.abs(data[d].high)))
+                .attr('height', d => {
+                    return Math.abs(data[d].high - data[d].low) ?
+                        yScale(Math.abs(data[d].high - data[d].low)) : 1;
+                })
+                .style('fill', (data[d].open - data[d].close) <= 0 ? "#006667" : "#ff1138")
+        };
+
+        const newBlocks = select(node)
+            .selectAll('g')
             .data(Object.keys(this.state.data))
             .enter()
-            .append('rect');
+            .append('g');
 
-        select(node)
-            .selectAll('rect')
+        newBlocks.append('rect')
             .data(Object.keys(this.state.data))
-            .attr('x', (d, i) => i * 25)
-            .attr('width', 20)
-            .each(updateEachData);
+            .attr('x', (d, i) => i * (candleOCWidth + candleOCGap))
+            .attr('width', candleOCWidth)
+            .each(updateOCBlockColorAndDimensions);
+
+        newBlocks.append('rect')
+            .attr('x', (d, i) => i * (candleOCWidth + candleOCGap))
+            .attr('width', candleHLWidth)
+            .attr("transform", `translate(${(candleOCWidth - candleHLWidth)/2},0)`)
+            .each(updateHLBlockColorAndDimensions);
+
+        select(node).selectAll('g').exit()
     }
 
     addNextData() {
