@@ -11,7 +11,11 @@ class PriceChart extends React.Component {
         this.state = {
             data: {},
             lastDate: "",
-            loaded: true
+            loaded: true,
+            svgDimensions: {
+                width: 500,
+                height: 500
+            }
         };
         this.drawPriceGraph = this.drawPriceGraph.bind(this);
     }
@@ -31,18 +35,25 @@ class PriceChart extends React.Component {
     drawPriceGraph() {
         const node = this.node;
         const data = this.state.data;
+        const svgDimensions = this.state.svgDimensions;
+        const priceMin = 0;
+        const priceMax = 40;
         const candleOCWidth = 10;
         const candleOCGap = 6;
         const candleHLWidth = 2;
-        const yScale = scaleLinear()
-            .domain([0, 40])
-            .range([0, 500]);
+        const animationDuration = 500;
+
+        const yScale = scaleLinear().domain([priceMin, priceMax]).range([0, svgDimensions.width]);
+
+        const y_axis_scale = scaleLinear().domain([priceMax, priceMin]).range([0, svgDimensions.width]);
+        const y_axis = d3.axisLeft().scale(y_axis_scale);
+        select("svg").append("g").attr('class', 'axis y-axis').attr("transform", "translate(495, 0)").call(y_axis);
 
         const updateOCBlockColorAndDimensions = function(d) {
             d3.select(this)
                 .transition()
-                .duration(500)
-                .attr('y', d => yScale(Math.abs(data[d].close)))
+                .duration(animationDuration)
+                .attr('y', d => svgDimensions.width - yScale(Math.max(Math.abs(data[d].open), Math.abs(data[d].close))))
                 .attr('height', d => {
                     return Math.abs(data[d].open - data[d].close) ?
                         yScale(Math.abs(data[d].open - data[d].close)) : 1;
@@ -53,8 +64,8 @@ class PriceChart extends React.Component {
         const updateHLBlockColorAndDimensions = function(d) {
             d3.select(this)
                 .transition()
-                .duration(500)
-                .attr('y', d => 500 - yScale(Math.abs(data[d].high)))
+                .duration(animationDuration)
+                .attr('y', d => svgDimensions.width - yScale(Math.max(Math.abs(data[d].high), Math.abs(data[d].low))))
                 .attr('height', d => {
                     return Math.abs(data[d].high - data[d].low) ?
                         yScale(Math.abs(data[d].high - data[d].low)) : 1;
@@ -63,10 +74,11 @@ class PriceChart extends React.Component {
         };
 
         const newBlocks = select(node)
-            .selectAll('g')
+            .selectAll('g.block')
             .data(Object.keys(this.state.data))
             .enter()
-            .append('g');
+            .append('g')
+            .attr('class', 'block');
 
         newBlocks.append('rect')
             .data(Object.keys(this.state.data))
@@ -80,6 +92,13 @@ class PriceChart extends React.Component {
             .attr("transform", `translate(${(candleOCWidth - candleHLWidth)/2},0)`)
             .each(updateHLBlockColorAndDimensions);
 
+        newBlocks.append("text")
+            .attr('x', (d, i) => i * (candleOCWidth + candleOCGap))
+            .attr('y', (d, i) => svgDimensions.width - yScale(Math.max(Math.abs(data[d].high), Math.abs(data[d].low))))
+            .text(function(d) {
+                return (data[d].close - data[d].open);
+            });
+
         select(node).selectAll('g').exit()
     }
 
@@ -91,15 +110,15 @@ class PriceChart extends React.Component {
         let lastData = data[this.state.lastDate];
         let updatedData = data;
         updatedData[newLastDate] = generatePriceGraphDataForThisDay(newLastDate, lastData.symbol, lastData.interval);
-        this.setState({data: updatedData, lastDate: newLastDate, loaded: false});
-        // this.drawPriceGraph();
+        let svgDimensions = this.state.svgDimensions;
+        this.setState({data: updatedData, lastDate: newLastDate, loaded: false, svgDimensions: svgDimensions});
     }
 
     render() {
         return (
             <div className="awesome-price-chart">
-                <button onClick={() => this.addNextData()}>Change</button>
-                <svg ref={node => this.node = node} width={500} height={500}/>
+                <button onClick={() => this.addNextData()}>Add one data</button>
+                <svg ref={node => this.node = node} style={{"margin": "10px"}} width={this.state.svgDimensions.width} height={this.state.svgDimensions.height}/>
             </div>
         );
     }

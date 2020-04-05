@@ -5,7 +5,7 @@ function randomIntFromInterval(min,max){
 }
 
 export function generatePriceGraphDataForThisDay(date, symbol, interval) {
-    const newData = {
+    let newData = {
         "high": randomIntFromInterval(25, 32),
         "open": randomIntFromInterval(15, 25),
         "close": randomIntFromInterval(15, 25),
@@ -15,6 +15,7 @@ export function generatePriceGraphDataForThisDay(date, symbol, interval) {
         "symbol": symbol,
         "interval": interval,
     };
+    newData["avg"] = (newData["open"] + newData["close"])/2;
     console.log("generatePriceGraphDataForThisDay : ", newData);
     return newData;
 }
