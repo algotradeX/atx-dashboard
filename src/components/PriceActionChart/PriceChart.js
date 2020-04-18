@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {scaleLinear, scaleBand} from "d3";
-import {select, selectAll} from "d3-selection";
+import {select} from "d3-selection";
 import moment from "moment";
 import React from 'react';
 import {generatePriceGraphDataForThisDay, getInitialData} from "../../services/faker/PriceGraphDataGenerator";
@@ -13,7 +13,7 @@ class PriceChart extends React.Component {
             lastDate: "",
             loaded: true,
             svgDimensions: {
-                width: 500,
+                width: 1500,
                 height: 500
             }
         };
@@ -35,13 +35,25 @@ class PriceChart extends React.Component {
     drawPriceGraph() {
         const node = this.node;
         const data = this.state.data;
+        const dates = Object.keys(data);
         const svgDimensions = this.state.svgDimensions;
-        const priceMin = 0;
-        const priceMax = 40;
+
+        const verticalBufferRatio = 0.1;
         const candleOCWidth = 10;
         const candleOCGap = 6;
         const candleHLWidth = 2;
         const animationDuration = 500;
+        const dataMin = dates.reduce((acc, cv) => {
+            let min = Math.min(data[cv]["low"], data[cv]["high"], data[cv]["open"], data[cv]["close"]);
+            return acc < min ? acc : min;
+        });
+        const priceMin = Math.floor(dataMin*(1 - verticalBufferRatio));
+        const dataMax = dates.reduce((acc, cv) => {
+            let max = Math.max(data[cv]["low"], data[cv]["high"], data[cv]["open"], data[cv]["close"]);
+            return acc > max ? acc : max;
+        });
+        const priceMax = Math.ceil(dataMax*(1 + verticalBufferRatio));
+
         const yScale = scaleLinear().domain([priceMin, priceMax]).range([0, svgDimensions.height]);
 
         select("svg").selectAll("g.x-axis").remove();
@@ -69,10 +81,10 @@ class PriceChart extends React.Component {
             d3.select(this)
                 .transition()
                 .duration(animationDuration)
-                .attr('y', d => svgDimensions.width - yScale(Math.max(Math.abs(data[d].open), Math.abs(data[d].close))))
+                .attr('y', d => svgDimensions.height - yScale(Math.max(Math.abs(data[d].open), Math.abs(data[d].close))))
                 .attr('height', d => {
                     return Math.abs(data[d].open - data[d].close) ?
-                        yScale(Math.abs(data[d].open - data[d].close)) : 1;
+                        Math.abs(yScale(Math.abs(data[d].open)) - yScale(Math.abs(data[d].close))) : 1;
                 })
                 .style('fill', (data[d].open - data[d].close) <= 0 ? "#006667" : "#ff1138");
         };
@@ -81,10 +93,10 @@ class PriceChart extends React.Component {
             d3.select(this)
                 .transition()
                 .duration(animationDuration)
-                .attr('y', d => svgDimensions.width - yScale(Math.max(Math.abs(data[d].high), Math.abs(data[d].low))))
+                .attr('y', d => svgDimensions.height - yScale(Math.max(Math.abs(data[d].high), Math.abs(data[d].low))))
                 .attr('height', d => {
                     return Math.abs(data[d].high - data[d].low) ?
-                        yScale(Math.abs(data[d].high - data[d].low)) : 1;
+                        Math.abs(yScale(Math.abs(data[d].high)) - yScale(Math.abs(data[d].low))) : 1;
                 })
                 .style('fill', (data[d].open - data[d].close) <= 0 ? "#006667" : "#ff1138")
         };
@@ -97,12 +109,13 @@ class PriceChart extends React.Component {
             .attr('class', 'block');
 
         newBlocks.append('rect')
-            .data(Object.keys(this.state.data))
+            .attr('class', 'oc-rect')
             .attr('x', (d, i) => i * (candleOCWidth + candleOCGap))
             .attr('width', candleOCWidth)
             .each(updateOCBlockColorAndDimensions);
 
         newBlocks.append('rect')
+            .attr('class', 'hl-rect')
             .attr('x', (d, i) => i * (candleOCWidth + candleOCGap))
             .attr('width', candleHLWidth)
             .attr("transform", `translate(${(candleOCWidth - candleHLWidth)/2},0)`)
@@ -110,16 +123,16 @@ class PriceChart extends React.Component {
 
         newBlocks.append("text")
             .attr('x', (d, i) => i * (candleOCWidth + candleOCGap))
-            .attr('y', (d, i) => svgDimensions.width - yScale(Math.max(Math.abs(data[d].high), Math.abs(data[d].low))))
+            .attr('y', (d, i) => svgDimensions.height - yScale(Math.max(Math.abs(data[d].high), Math.abs(data[d].low))))
             .text(function(d) {
-                return (data[d].close - data[d].open);
+                return (data[d].avg);
             });
 
         select(node).selectAll('g').exit();
 
         let lineGenerator = d3.line().curve(d3.curveCatmullRom);
         let avg_data = Object.keys(data).map((d, i) => {
-            return [(candleOCWidth + candleOCGap)*i + candleOCWidth/2, (svgDimensions.width - yScale(data[d].avg))]
+            return [(candleOCWidth + candleOCGap)*i + candleOCWidth/2, (svgDimensions.height - yScale(data[d].avg))]
         });
         let pathString = lineGenerator(avg_data);
         select("svg").selectAll("path.avg-price-line").remove();
@@ -128,6 +141,13 @@ class PriceChart extends React.Component {
             .style("fill", "none")
             .attr("class", "line avg-price-line")
             .attr("d", pathString);
+        select("path.avg-price-line")
+            .attr("stroke-dasharray", 10 + " " + 2)
+            .attr("stroke-dashoffset", 20)
+            .transition()
+            .duration(2000)
+            .ease(d3.easeElasticOut)
+            .attr("stroke-dashoffset", 0);
     }
 
     addNextData() {

@@ -5,11 +5,12 @@ function randomIntFromInterval(min,max){
 }
 
 export function generatePriceGraphDataForThisDay(date, symbol, interval) {
+    let base = randomIntFromInterval(10, 200);
     let newData = {
-        "high": randomIntFromInterval(25, 32),
-        "open": randomIntFromInterval(15, 25),
-        "close": randomIntFromInterval(15, 25),
-        "low": randomIntFromInterval(6, 15),
+        "high": base + randomIntFromInterval(25, 32),
+        "open": base + randomIntFromInterval(15, 25),
+        "close": base + randomIntFromInterval(15, 25),
+        "low": base + randomIntFromInterval(6, 15),
         "volume": randomIntFromInterval(50, 200),
         "date": date,
         "symbol": symbol,
