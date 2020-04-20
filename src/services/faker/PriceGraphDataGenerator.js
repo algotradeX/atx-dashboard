@@ -28,7 +28,7 @@ export function getInitialData(startDate="01-Mar-2020", days=10, symbol="HDFC", 
     for(let i = 0; i < days; i++) {
         lastDate = date.format('DD-MMM-YYYY');
         data[date.format('DD-MMM-YYYY')] = generatePriceGraphDataForThisDay(date.format('DD-MMM-YYYY'), symbol, interval);
-        date.add("days", 1);
+        date.add( 1, "days");
     }
     return {data: data, lastDate: lastDate};
 }

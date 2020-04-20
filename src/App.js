@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import {NavigationBar} from "./components/NavigationBar/NavBar";
 import AwesomeChart from "./containers/AwesomeChart";
-import './App.css';
+import PriceActionGraph from "./containers/PriceActionGraph";
+import './App.scss';
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-    Link
+    Route
 } from "react-router-dom";
 import Home from "./containers/Home";
 import BarChart from "./components/PriceActionChart/BarChart";
@@ -17,20 +18,7 @@ class App extends Component {
             <div className="App">
                 <Router>
                     <div>
-                        <nav>
-                            <ul>
-                                <li>
-                                    <Link to="/">Home</Link>
-                                </li>
-                                <li>
-                                    <Link to="/bar-chart">Sample bar chart</Link>
-                                </li>
-                                <li>
-                                    <Link to="/awesome-chart">Price Action Chart</Link>
-                                </li>
-                            </ul>
-                        </nav>
-
+                        <NavigationBar/>
                         {/* A <Switch> looks through its children <Route>s and
                          renders the first one that matches the current URL. */}
                         <Switch>
@@ -39,6 +27,9 @@ class App extends Component {
                             </Route>
                             <Route path="/awesome-chart">
                                 <AwesomeChart/>
+                            </Route>
+                            <Route path="/price-action-graph">
+                                <PriceActionGraph/>
                             </Route>
                             <Route path="/">
                                 <Home />
