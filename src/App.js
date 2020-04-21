@@ -26,10 +26,10 @@ class App extends Component {
                                 <BarChart data={[Math.random(), Math.random(), Math.random(), Math.random(), Math.random()]} size={[500,500]} />
                             </Route>
                             <Route path="/awesome-chart">
-                                <AwesomeChart/>
+                                <AwesomeChart />
                             </Route>
                             <Route path="/price-action-graph">
-                                <PriceActionGraph/>
+                                <PriceActionGraph />
                             </Route>
                             <Route path="/">
                                 <Home />

@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
+import classnames from 'classnames';
+import Styles from './NavBar.module.scss';
 
 export function NavigationBar() {
     const [selected, setSelected] = useState(0);
@@ -37,10 +39,15 @@ export function NavigationBar() {
     };
 
     return (
-        <nav className="navigation-bar">
+        <nav className={Styles.navigationBar}>
             {Object.keys(navigationMap).map((pathname, index) => (
-                <div className={ selected === index ? "navigation-div selected-path" : "navigation-div"} key={pathname}>
-                    <Link to={pathname} onClick={(index) => setSelected(index)}>{navigationMap[pathname].title}</Link>
+                <div className={
+                    classnames({
+                        [Styles.navigationDiv]: true,
+                        [Styles.selectedPath]: selected === index
+                    })
+                } key={pathname}>
+                    <Link to={pathname} onClick={() => setSelected(index)}>{navigationMap[pathname].title}</Link>
                 </div>
             ))}
         </nav>

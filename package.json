@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "classnames": "2.2.6",
     "d3": "5.15.1",
     "d3-array": "2.4.0",
     "d3-scale": "3.2.1",
@@ -40,5 +41,8 @@
   },
   "devDependencies": {
     "react-faux-dom": "4.5.0"
+  },
+  "peerDependencies": {
+    "typescript": "3.8.3"
   }
 }
