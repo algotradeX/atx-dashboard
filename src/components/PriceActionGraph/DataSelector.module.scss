@@ -7,10 +7,14 @@
     background-color: $background-color;
     padding: 6px 18px;
     min-width: 100px;
-    width: 10vw;
+    max-width: 200px;
+    width: 20vw;
     font-size: 14px;
     .formControl {
         margin: 10px;
         min-width: 60px;
+    }
+    .dsButton {
+        margin: 10px;
     }
 }

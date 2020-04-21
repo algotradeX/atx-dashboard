@@ -41,7 +41,7 @@ export function NavigationBar() {
         const pathArray = Object.keys(navigationMap);
         const selectedIndex = pathArray.findIndex((path) => path === pathname);
         setSelected(selectedIndex);
-    }, []);
+    }, [location.pathname, navigationMap]);
 
 
     return (

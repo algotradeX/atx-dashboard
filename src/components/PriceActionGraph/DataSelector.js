@@ -2,15 +2,19 @@ import React from 'react';
 import Styles from './DataSelector.module.scss';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Button from '@material-ui/core/Button';
+import ArchiveIcon from '@material-ui/icons/Archive';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
+import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import Select from '@material-ui/core/Select';
 
 class DataSelector extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            symbol: 'HDFC',
-            series: 'ES',
-            granularity: '1080',
+            symbol: '',
+            series: '',
+            granularity: '',
             saved: true
         };
     }
@@ -24,9 +28,15 @@ class DataSelector extends React.Component {
         });
     };
 
+    fetchData = () => {
+        if(this.state.symbol !== "" && this.state.series !== "" && this.state.granularity !== "") {
+            this.props.fetchData && this.props.fetchData();
+        }
+    };
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         if(!this.state.saved) {
-            this.props.saveSelectedData && this.props.saveSelectedData({
+            this.props.saveSelectedOptions && this.props.saveSelectedOptions({
                 symbol: this.state.symbol,
                 series: this.state.series,
                 granularity: this.state.granularity
@@ -50,9 +60,12 @@ class DataSelector extends React.Component {
                             id: 'outlined-age-native-simple',
                         }}
                     >
-                        <option value={"HDFC"}>HDFC</option>
-                        <option value={"Bajaj"}>Bajaj</option>
-                        <option value={"Alchem"}>Alchem</option>
+                        <option aria-label="None" value="" />
+                        {Object.keys(this.props.availableOptions && this.props.availableOptions.symbols).map((sym) =>
+                            (<option value={sym} key={sym}>
+                                {this.props.availableOptions.symbols[sym].display}
+                            </option>)
+                        )}
                     </Select>
                 </FormControl>
 
@@ -68,8 +81,12 @@ class DataSelector extends React.Component {
                             id: 'outlined-age-native-simple',
                         }}
                     >
-                        <option value={"EL"}>EL</option>
-                        <option value={"ES"}>ES</option>
+                        <option aria-label="None" value="" />
+                        {this.props.availableOptions &&  this.props.availableOptions.symbols &&
+                            this.props.availableOptions.symbols[this.state.symbol] &&
+                            this.props.availableOptions.symbols[this.state.symbol].series.map(
+                            (series) => <option value={series} key={series}>{series}</option>
+                        )}
                     </Select>
                 </FormControl>
 
@@ -85,11 +102,45 @@ class DataSelector extends React.Component {
                             id: 'outlined-age-native-simple',
                         }}
                     >
-                        <option value={"1080"}>1 Day</option>
-                        <option value={"300"}>5 Min</option>
-                        <option value={"60"}>1 Min</option>
+                        <option aria-label="None" value="" />
+                        {Object.keys(this.props.availableOptions && this.props.availableOptions.granularity).map((g) =>
+                            (<option value={g} key={g}>
+                                {this.props.availableOptions.granularity[g]}
+                            </option>)
+                        )}
                     </Select>
                 </FormControl>
+
+                <Button
+                    variant="contained"
+                    color={"primary"}
+                    className={Styles.dsButton}
+                    startIcon={<ArchiveIcon/>}
+                    onClick={this.fetchData}
+                    disabled={(this.state.symbol !== "" && this.state.series !== "" && this.state.granularity !== "") ?
+                        false : true
+                    }
+                >
+                    Fetch
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    className={Styles.dsButton}
+                    startIcon={<BookmarkIcon/>}
+                >
+                    Bookmarked
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    className={Styles.dsButton}
+                    startIcon={<BookmarkBorderIcon/>}
+                >
+                    Bookmark
+                </Button>
             </div>
         );
     }

@@ -1,4 +1,5 @@
 import React from 'react';
+import {fetchGraphData} from "../services/AtxDataProcessor";
 import Styles from "./PriceActionGraph.module.scss";
 import DataSelector from "../components/PriceActionGraph/DataSelector";
 import DataGraph from "../components/PriceActionGraph/DataGraph";
@@ -7,19 +8,50 @@ class PriceActionGraph extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            selectedData: null
+            options: {
+                symbols: {
+                    HDFC: {
+                        display: "HDFC",
+                        series: ["EQ", "W2"]
+                    },
+                    ALCHEM: {
+                        display: "ALCHEM",
+                        series: ["BE"]
+                    }
+                },
+                granularity: {
+                    "1440": "1 day",
+                    "5": "5 min",
+                    "1": "1 min"
+                }
+            },
+            selectedOptions: null,
+            graphData: null
         };
     }
 
-    saveSelectedData(s) {
-        this.setState({selectedData: s});
+    saveSelectedOptions(s) {
+        this.setState({selectedOptions: s});
+    }
+
+    fetchDataGivenOptions() {
+        console.log("fetchDataGivenOptions");
+        const options = this.state.selectedOptions;
+        fetchGraphData(options);
     }
 
     render() {
         return (
             <div className={Styles.PriceActionGraphContainer}>
-                <DataSelector saveSelectedData={s => this.saveSelectedData(s)}/>
-                <DataGraph selection={this.state.selectedData}/>
+                <DataSelector
+                    availableOptions={this.state.options}
+                    saveSelectedOptions={s => this.saveSelectedOptions(s)}
+                    fetchData={() => this.fetchDataGivenOptions()}
+                />
+                <DataGraph
+                    selection={this.state.selectedOptions}
+                    data={this.state.graphData}
+                />
             </div>
         );
     }
