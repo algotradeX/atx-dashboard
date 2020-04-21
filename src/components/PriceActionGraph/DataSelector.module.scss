@@ -1,6 +1,16 @@
 @import "../../styles/index";
 
 .dataSelectorComponent {
+    display: flex;
+    flex-direction: column;
     color: $text-primary-color;
+    background-color: $background-color;
     padding: 6px 18px;
+    min-width: 100px;
+    width: 10vw;
+    font-size: 14px;
+    .formControl {
+        margin: 10px;
+        min-width: 60px;
+    }
 }

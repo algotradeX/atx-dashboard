@@ -17,7 +17,7 @@ class App extends Component {
         return (
             <div className="App">
                 <Router>
-                    <div>
+                    <div className="AppRouter">
                         <NavigationBar/>
                         {/* A <Switch> looks through its children <Route>s and
                          renders the first one that matches the current URL. */}
