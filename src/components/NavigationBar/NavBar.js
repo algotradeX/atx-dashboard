@@ -1,13 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import classnames from 'classnames';
 import Styles from './NavBar.module.scss';
 
 export function NavigationBar() {
-    const [selected, setSelected] = useState(0);
-    const location = useLocation();
-    const pathname = location.pathname;
-
     /*
     "pathname" : {
         "title": "String",
@@ -37,6 +33,16 @@ export function NavigationBar() {
             "scrollable": false
         }
     };
+    const [selected, setSelected] = useState(0);
+    const location = useLocation();
+
+    useEffect(() => {
+        const pathname = location.pathname;
+        const pathArray = Object.keys(navigationMap);
+        const selectedIndex = pathArray.findIndex((path) => path === pathname);
+        setSelected(selectedIndex);
+    }, []);
+
 
     return (
         <nav className={Styles.navigationBar}>

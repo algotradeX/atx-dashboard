@@ -10,9 +10,14 @@
         padding: 6px 12px;
         margin-right: 12px;
         a {
-            color: $primary-color;
+            color: $text-secondary-color;
             font-weight: bold;
             text-decoration: none;
+        }
+    }
+    .navigationDiv.selectedPath {
+        a {
+            color: $primary-color;
         }
     }
     .navigationDiv.selectedPath:after {
