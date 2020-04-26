@@ -7,4 +7,14 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    .graphContainer {
+        overflow-x: scroll;
+    }
+    .dataNotFoundDiv {
+        padding: 20px 0;
+        color: $secondary-color;
+        div {
+            padding: 10px 0;
+        }
+    }
 }

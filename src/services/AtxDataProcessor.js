@@ -12,7 +12,7 @@ export async function fetchGraphData(symbol, series, granularity) {
             "interval": granularity,
             "date": moment().format("DD-MMM-YYYY 00:00:00"),
             "page": 1,
-            "ipp": 100,
+            "ipp": 200,
             "indicators": []
         }
     })
