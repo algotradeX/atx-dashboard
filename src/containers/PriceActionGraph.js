@@ -34,10 +34,11 @@ class PriceActionGraph extends React.Component {
         this.setState({selectedOptions: s});
     }
 
-    fetchDataGivenOptions() {
+    async fetchDataGivenOptions() {
         console.log("fetchDataGivenOptions");
         const options = this.state.selectedOptions;
-        fetchGraphData(options);
+        const graphData = await fetchGraphData(options.symbol, options.series, options.granularity);
+        this.setState({graphData: graphData});
     }
 
     render() {
@@ -46,7 +47,7 @@ class PriceActionGraph extends React.Component {
                 <DataSelector
                     availableOptions={this.state.options}
                     saveSelectedOptions={s => this.saveSelectedOptions(s)}
-                    fetchData={() => this.fetchDataGivenOptions()}
+                    fetchData={async () => await this.fetchDataGivenOptions()}
                 />
                 <DataGraph
                     selection={this.state.selectedOptions}

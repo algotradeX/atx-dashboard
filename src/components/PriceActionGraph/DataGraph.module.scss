@@ -4,4 +4,7 @@
     color: $text-primary-color;
     padding: 6px 18px;
     font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Styles from './DataSelector.module.scss';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -117,8 +118,7 @@ class DataSelector extends React.Component {
                     className={Styles.dsButton}
                     startIcon={<ArchiveIcon/>}
                     onClick={this.fetchData}
-                    disabled={(this.state.symbol !== "" && this.state.series !== "" && this.state.granularity !== "") ?
-                        false : true
+                    disabled={(!(this.state.symbol !== "" && this.state.series !== "" && this.state.granularity !== ""))
                     }
                 >
                     Fetch
@@ -145,5 +145,11 @@ class DataSelector extends React.Component {
         );
     }
 }
+
+DataSelector.propTypes = {
+    availableOptions: PropTypes.object,
+    saveSelectedOptions: PropTypes.func,
+    fetchData: PropTypes.func
+};
 
 export default DataSelector;
