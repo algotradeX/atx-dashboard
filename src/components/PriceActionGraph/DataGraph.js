@@ -57,12 +57,13 @@ class DataGraph extends React.Component {
         // create the axes component
         select(node).selectAll("g.x-axis").remove();
         const x_axis_scale = scaleTime()
-            .domain([xMin - horizontalBufferRatioLeft, xMax - horizontalBufferRatioRight])
-            .range([0, svgDimensions.width]);
+            .domain([xMin.getTime() - horizontalBufferRatioLeft, xMax.getTime() + horizontalBufferRatioRight])
+            .range([0, svgDimensions.width - yRightMargin]);
         const x_axis = d3.axisBottom(x_axis_scale);
         select(node).append("g")
             .attr('class', 'axis x-axis')
             .attr("transform", `translate(0, ${svgDimensions.height - xBottomMargin})`)
+            .attr("z-index", 10)
             .call(x_axis);
 
         select(node).selectAll("g.y-axis").remove();
@@ -73,6 +74,7 @@ class DataGraph extends React.Component {
         select(node).append("g")
             .attr('class', 'axis y-axis')
             .attr("transform", `translate(${svgDimensions.width - yRightMargin}, 0)`)
+            .attr("z-index", 10)
             .call(y_axis);
 
         const updateOCBlockColorAndDimensions = function(d) {
@@ -145,8 +147,17 @@ class DataGraph extends React.Component {
 
         const volume_height = svgDimensions.height/5;
         const volume_scale = scaleLinear()
-            .domain([0, graph_meta_max.volume])
+            .domain([graph_meta_max.volume*(1 + verticalBufferRatioTop), 0])
             .range([0, volume_height]);
+        const volume_top_y = svgDimensions.height - xBottomMargin - volume_height;
+
+        select(node).selectAll("g.volume-axis").remove();
+        const volume_axis = d3.axisRight().scale(volume_scale).ticks(3);
+        select(node).append("g")
+            .attr('class', 'axis volume-axis')
+            .attr("transform", `translate(0, ${volume_top_y})`)
+            .attr("z-index", 10)
+            .call(volume_axis);
 
         select(node)
             .append('g')
@@ -164,9 +175,9 @@ class DataGraph extends React.Component {
             .append('rect')
             .attr('class', 'volume-rect')
             .attr('x', (d, i) => x_axis_scale(d * 1000))
-            .attr('y', (d, i) => svgDimensions.height - xBottomMargin - volume_scale(data[d].volume))
+            .attr('y', (d, i) => volume_top_y + volume_scale(data[d].volume))
             .attr('width', candleOCWidth)
-            .attr('height', (d, i) => volume_scale(data[d].volume))
+            .attr('height', (d, i) => volume_height - volume_scale(data[d].volume))
             .style('fill', "#caeaff");
 
         select(node)
@@ -179,14 +190,14 @@ class DataGraph extends React.Component {
             .append('path')
             .datum(Object.keys(data))
             .attr("fill", "#cce5df")
-            .attr("opacity", 0.9)
+            .attr("opacity", 0.1)
             .attr("stroke", "#69b3a2")
             .attr("stroke-width", 2)
             .transition()
             .duration(animationDuration)
             .attr("d", d3.area()
                 .x((d) => x_axis_scale(d * 1000))
-                .y0((d) => svgDimensions.height - xBottomMargin - volume_scale(data[d].volume))
+                .y0((d) => svgDimensions.height - xBottomMargin - (volume_height - volume_scale(data[d].volume)))
                 .y1(svgDimensions.height - xBottomMargin)
             )
     }
