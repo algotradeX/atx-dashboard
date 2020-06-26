@@ -17,6 +17,10 @@ class PriceActionGraph extends React.Component {
                     ALCHEM: {
                         display: "ALCHEM",
                         series: ["BE"]
+                    },
+                    BAJAJCON: {
+                        display: "BAJAJCON",
+                        series: ["EQ"]
                     }
                 },
                 granularity: {
